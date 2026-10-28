@@ -322,3 +322,137 @@ En todos los casos se utilizó la IA DeepSeek-V4-Flash
         La IA percibe que tengo más nivel del real... lo nuevo aquí es que veo que map funciona muy similar a un for en python asique asique no es necesario anotar cada bloque mas de una vez, basta con una sola y colocar lo que va diferente en cada bloque dentro de una lista con diccionario. 
         Se agregaron los bloques tal cual pero cambiando algunas constantes para que la información fuera más realista. 
         (habia olvidado agregar el commit aquí) 
+
+5.  Esta vez le pasé a la IA directamente la instrucción dada en el paso a paso.
+    Input: 
+        Fase 6. Componente reutilizable con props: TarjetaProyecto
+
+        Crea components/TarjetaProyecto.jsx. El componente recibe por props titulo, descripcion y enlace (puedes desestructurarlas en los parámetros de la función).
+        Dentro muestra el título, la descripción y un enlace "Ver proyecto". Como es un enlace externo a GitHub, aquí sí corresponde <a href>; agrégale target="_blank" y rel="noopener noreferrer".
+        En Proyectos.jsx define un arreglo con dos o tres proyectos y recórrelo con .map(), pasando los datos como props a cada TarjetaProyecto.
+        Usa enlaces reales a tus repositorios. Si un proyecto no tiene repositorio, indícalo en lugar de poner un enlace falso.
+
+        Verificación: al cambiar el título de un proyecto en el arreglo, debe cambiar en pantalla. Eso confirma que las props funcionan.
+        Commit: feat: página Proyectos con TarjetaProyecto.
+
+    Output:
+        ¡Excelente! Ahora entramos en el corazón de React: **los componentes reutilizables y las props**. Esto es lo que hace que React sea tan poderoso. No te asustes, es más simple de lo que parece.
+
+        La idea es: crear una "tarjeta" una sola vez, y luego usarla muchas veces pasándole datos diferentes. Es como un molde de galletas: el molde es el componente, y los datos (título, descripción, enlace) son la masa que le pones.
+
+        ---
+
+        ### Paso 1: Crear `src/components/TarjetaProyecto.jsx`
+
+        Crea este archivo y pega lo siguiente:
+
+        ```jsx
+        export default function TarjetaProyecto({ titulo, descripcion, enlace }) {
+        return (
+            <article>
+            <h3>{titulo}</h3>
+            <p>{descripcion}</p>
+            {enlace ? (
+                <a href={enlace} target="_blank" rel="noopener noreferrer">
+                Ver proyecto
+                </a>
+            ) : (
+                <span>Sin repositorio disponible</span>
+            )}
+            </article>
+        )
+        }
+        ```
+
+        **¿Qué está pasando aquí?**
+        - `{ titulo, descripcion, enlace }` es **desestructuración**: en lugar de recibir un objeto `props` y luego hacer `props.titulo`, directamente extraemos las propiedades. Es más limpio.
+        - El `{enlace ? (...) : (...)}` es un **operador ternario**: si `enlace` existe (es decir, no es `undefined` ni `null`), muestra el `<a>`. Si no existe, muestra el `<span>` con el texto "Sin repositorio disponible". Así cumplimos con la instrucción de no poner enlaces falsos.
+
+        ---
+
+        ### Paso 2: Actualizar `src/pages/Proyectos.jsx`
+
+        Abre `Proyectos.jsx` y reemplaza todo su contenido por esto:
+
+        ```jsx
+        import TarjetaProyecto from '../components/TarjetaProyecto'
+
+        export default function Proyectos() {
+        const proyectos = [
+            {
+            titulo: 'Mini Portafolio',
+            descripcion: 'Este mismo portafolio, construido con React, Vite y React Router.',
+            enlace: 'https://github.com/TU-USUARIO/mini-portafolio',
+            },
+            {
+            titulo: 'Proyecto de ejemplo 1',
+            descripcion: 'Descripción breve de tu primer proyecto.',
+            enlace: 'https://github.com/TU-USUARIO/proyecto-1',
+            },
+            {
+            titulo: 'Proyecto sin repositorio',
+            descripcion: 'Un proyecto que aún no tiene repositorio público.',
+            enlace: null,
+            },
+        ]
+
+        return (
+            <section>
+            <h1>Proyectos</h1>
+            <div>
+                {proyectos.map((proyecto) => (
+                <TarjetaProyecto
+                    key={proyecto.titulo}
+                    titulo={proyecto.titulo}
+                    descripcion={proyecto.descripcion}
+                    enlace={proyecto.enlace}
+                />
+                ))}
+            </div>
+            </section>
+        )
+        }
+        ```
+
+        **Cosas importantes:**
+        1.  **Importa el componente** desde `../components/TarjetaProyecto`. La ruta `../` significa "sube un nivel desde `pages/` hasta `src/`, y luego entra en `components/`".
+        2.  **El arreglo `proyectos`** tiene objetos con las tres propiedades que espera el componente.
+        3.  **El `.map()`** recorre el arreglo y por cada proyecto renderiza un `<TarjetaProyecto />`, pasándole los datos como props.
+        4.  **El `key`** es obligatorio y debe ser único. Usamos `proyecto.titulo` porque asumimos que no se repite.
+        5.  **El tercer proyecto tiene `enlace: null`** para probar la condición del ternario. Deberías ver "Sin repositorio disponible" en lugar del enlace.
+
+        **Antes de guardar**, cambia `TU-USUARIO` por tu usuario real de GitHub en los enlaces. Si no tienes repositorios públicos todavía, puedes dejar el primero con tu repo real (el de `mini-portafolio`) y los otros con `null`.
+
+        ---
+
+        ### Paso 3: Verificación (¡la prueba clave!)
+
+        1.  Guarda los dos archivos.
+        2.  Ve al navegador y entra a la página "Proyectos" (clic en el menú o escribe `http://localhost:5173/proyectos`).
+        3.  Deberías ver tres tarjetas: la primera con el título "Mini Portafolio" y un enlace "Ver proyecto"; la segunda con otro proyecto; la tercera con "Sin repositorio disponible".
+        4.  **La prueba de las props:** vuelve a VS Code, cambia el título del primer proyecto en el arreglo (por ejemplo, de "Mini Portafolio" a "Mi Portafolio Increíble"), guarda, y mira el navegador. El título debería cambiar automáticamente sin recargar. Si cambia, **las props funcionan perfectamente**.
+        5.  Abre la consola (F12) y revisa que no haya warnings en amarillo sobre `key`.
+
+        ---
+
+        ### Paso 4: Commit
+
+        Desde la terminal:
+        ```bash
+        git add .
+        git commit -m "feat: página Proyectos con TarjetaProyecto"
+        git push
+        ```
+
+        ---
+
+        **Un detalle sobre `target="_blank"` y `rel="noopener noreferrer"`:** el `target="_blank"` abre el enlace en una pestaña nueva. El `rel="noopener noreferrer"` es una medida de seguridad: evita que la página de destino pueda manipular la tuya (algo llamado "tabnabbing"). Es buena práctica siempre que uses `target="_blank"`, y el enunciado lo pide explícitamente.
+
+        **Si algo no se ve o la consola muestra un error rojo**, mándamelo y lo revisamos. ¡Ya casi terminas la estructura principal!
+
+    Reflexión y cambios a realizar: 
+        El bloque de TarjetaProyecto.jsx me llamó la atención por como la ia entegó los atributos de alguna forma separados. Resulta bastante cómoda esta función porque, una vez más, no es necesario anotar lo mismo cada vez. Me hace pensar en un proyecto escalable que permite que sea más rápido y sencillo el agregar proyectos al portafolio.
+        En principio es simple, la función recibe tres parametros, titulo y descripción los muestra tal cual pero el parametro de enlace es mas interesante. Lo que la función devuelve en esta parte depende de si existe o no un enlace, en caso de que haya nos lleva a él si no pues avisa de primeras que que no hay ningun repositori odisponible para dichoa tarjeta/proyecto.
+        Respecto al código se incluyeron los bloques tal cual dentro del portafolio solo que cambiando el contenido de const proyectos en el documento Proyectos.jsx
+        El bloque presentado en este ultimo documento nos permite usar la función de TarjetaProyecto pasandole los atributos de la función que hay definido dentro de function Proyectos(), Mas adelante retorna la sección Proyectos con sus respectivas tarjetas que se repiten en estructura pero cambian en contenido, este bloque solo se escribe una vez porque usamos la función map() para recorrer la constante.
+
