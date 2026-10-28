@@ -14,7 +14,7 @@ export default function Inicio() {
 
         <article>
           <h3>Proyectos</h3>
-          <p>LO que llevo hasta ahora.</p>
+          <p>Lo que llevo hasta ahora.</p>
         </article>
 
         <article>
